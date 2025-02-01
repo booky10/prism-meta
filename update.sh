@@ -59,7 +59,11 @@ if [ "${DEPLOY_TO_GIT}" = true ]; then
     upstream_git add quilt/loader-installer-json/*.json quilt/meta-v3/*.json quilt/jars/*.json || fail_in
     upstream_git add liteloader/*.json || fail_in
     upstream_git add java_runtime/adoptium/available_releases.json java_runtime/adoptium/versions/*.json java_runtime/azul/packages.json java_runtime/azul/versions/*.json || fail_in
+
     if ! upstream_git diff --cached --exit-code; then
+        date -Isec --utc > "${META_UPSTREAM_DIR}/last_update.txt" || fail_in
+        upstream_git add last_update.txt || fail_in
+
         upstream_git commit -a -m "Update ${currentDate}" || fail_in
         upstream_git push || exit 1
     fi
@@ -86,6 +90,9 @@ if [ "${DEPLOY_TO_GIT}" = true ]; then
     launcher_git add net.minecraft.java/* net.adoptium.java/* com.azul.java/* || fail_out
 
     if ! launcher_git diff --cached --exit-code; then
+        date -Isec --utc > "${META_LAUNCHER_DIR}/last_update.txt" || fail_in
+        launcher_git add last_update.txt || fail_in
+
         launcher_git commit -a -m "Update ${currentDate}" || fail_out
         launcher_git push || exit 1
     fi

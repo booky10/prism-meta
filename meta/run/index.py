@@ -24,7 +24,7 @@ def hash_file(hash_fn, file_name):
 
 
 # ignore these files when indexing versions
-ignore = {"index.json", "package.json", ".git", ".github"}
+ignore = {"index.json", "package.json", ".git", ".github", "last_update.txt"}
 
 # initialize output structures - package list level
 packages = MetaPackageIndex()

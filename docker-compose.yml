@@ -1,0 +1,18 @@
+services:
+  meta:
+    build:
+      context: .
+      args:
+        UID: "${UID}"
+        GID: "${GID}"
+    command: cron
+    container_name: prism-meta
+    tty: true
+    stdin_open: true
+    volumes:
+    - "./config.sh:/app/run/config.sh:ro"
+    - "./deploy.key:/app/run/deploy.key:ro"
+    - "./caches:/app/run/caches"
+    - "./upstream:/app/run/upstream"
+    - "./launcher:/app/run/launcher"
+    restart: unless-stopped

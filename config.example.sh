@@ -10,6 +10,6 @@ export GIT_AUTHOR_NAME="Herpington Derpson"
 export GIT_AUTHOR_EMAIL="herpderp@derpmail.com"
 export GIT_COMMITTER_NAME="$GIT_AUTHOR_NAME"
 export GIT_COMMITTER_EMAIL="$GIT_AUTHOR_EMAIL"
-export GIT_SSH_COMMAND="ssh -i ${BASEDIR}/config/deploy.key"
+export GIT_SSH_COMMAND="ssh -i ${BASEDIR}/deploy.key"
 
 export HEALTHCHECKS_URL=""

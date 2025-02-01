@@ -6,17 +6,26 @@ if [ -f config.sh ]; then
     source config.sh
 fi
 
+function healthchecks {
+    if [ -n "$HEALTHCHECKS_URL" ]; then
+        curl --retry 5 -s -o /dev/null "$HEALTHCHECKS_URL/$1"
+    fi
+}
+healthchecks start
+
 export META_CACHE_DIR=${CACHE_DIRECTORY:-./caches}
 export META_UPSTREAM_DIR=${META_UPSTREAM_DIR:-${STATE_DIRECTORY:-.}/upstream}
 export META_LAUNCHER_DIR=${META_LAUNCHER_DIR:-${STATE_DIRECTORY:-.}/launcher}
 
 function fail_in() {
     upstream_git reset --hard HEAD
+    healthchecks fail
     exit 1
 }
 
 function fail_out() {
     launcher_git reset --hard HEAD
+    healthchecks fail
     exit 1
 }
 
@@ -87,4 +96,5 @@ if [ "${DEPLOY_TO_FOLDER}" = true ]; then
     rsync -rvog --chown="${DEPLOY_FOLDER_USER}:${DEPLOY_FOLDER_GROUP}" --exclude=.git "${LAUNCHER_DIR}/" "${DEPLOY_FOLDER}"
 fi
 
+healthchecks 0
 exit 0

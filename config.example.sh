@@ -1,5 +1,7 @@
 export META_UPSTREAM_DIR=upstream
 export META_LAUNCHER_DIR=launcher
+export META_UPSTREAM_URL=git@github.com:booky10/prism-meta-upstream.git
+export META_LAUNCHER_URL=git@github.com:booky10/prism-meta-data.git
 export DEPLOY_TO_FOLDER=false
 export DEPLOY_FOLDER=/app/public/v1
 export DEPLOY_FOLDER_USER=http

@@ -15,3 +15,6 @@ __pycache__
 config.sh
 launcher
 upstream
+
+deploy.key
+.env

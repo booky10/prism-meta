@@ -16,3 +16,4 @@ services:
     - "./upstream:/app/run/upstream"
     - "./launcher:/app/run/launcher"
     restart: unless-stopped
+    init: true

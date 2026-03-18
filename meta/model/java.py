@@ -18,7 +18,7 @@ class JavaRuntimeOS(StrEnum):
     MacOsX64 = "mac-os-x64"
     MacOsX86 = "mac-os-x86"  # rare
     MacOsArm64 = "mac-os-arm64"
-    # MacOsArm32 = "mac-os-arm32" # doesn't exist
+    # MacOsArm32 = "mac-os-arm32" # doesn't exsist
     LinuxX64 = "linux-x64"
     LinuxX86 = "linux-x86"
     LinuxArm64 = "linux-arm64"
@@ -123,18 +123,15 @@ class APIQuery(MetaBase):
         return urlencode(set_parts, doseq=True)
 
 
-# Adoptx refers to both Adoptium (Eclipse Temurin) and AdoptOpenJDK (IBM Semeru Runtime Open Edition)
-class AdoptxJvmImpl(StrEnum):
-    Hotspot = "hotspot"
-    OpenJ9 = "openj9"
+class AdoptiumJvmImpl(StrEnum):
+    Hostspot = "hotspot"
 
 
-class AdoptxVendor(StrEnum):
+class AdoptiumVendor(StrEnum):
     Eclipse = "eclipse"
-    Ibm = "ibm"
 
 
-class AdoptxArchitecture(StrEnum):
+class AdoptiumArchitecture(StrEnum):
     X64 = "x64"
     X86 = "x86"
     X32 = "x32"
@@ -147,22 +144,22 @@ class AdoptxArchitecture(StrEnum):
     Riscv64 = "riscv64"
 
 
-class AdoptxReleaseType(StrEnum):
-    GeneralAccess = "ga"
+class AdoptiumReleaseType(StrEnum):
+    GenralAccess = "ga"
     EarlyAccess = "ea"
 
 
-class AdoptxSortMethod(StrEnum):
+class AdoptiumSortMethod(StrEnum):
     Default = "DEFAULT"
     Date = "DATE"
 
 
-class AdoptxSortOrder(StrEnum):
+class AdoptiumSortOrder(StrEnum):
     Asc = "ASC"
     Desc = "DESC"
 
 
-class AdoptxImageType(StrEnum):
+class AdoptiumImageType(StrEnum):
     Jdk = "jdk"
     Jre = "jre"
     Testimage = "testimage"
@@ -172,12 +169,12 @@ class AdoptxImageType(StrEnum):
     Sbom = "sbom"
 
 
-class AdoptxHeapSize(StrEnum):
+class AdoptiumHeapSize(StrEnum):
     Normal = "normal"
     Large = "large"
 
 
-class AdoptxProject(StrEnum):
+class AdoptiumProject(StrEnum):
     Jdk = "jdk"
     Valhalla = "valhalla"
     Metropolis = "metropolis"
@@ -185,12 +182,12 @@ class AdoptxProject(StrEnum):
     Shenandoah = "shenandoah"
 
 
-class AdoptxCLib(StrEnum):
+class AdoptiumCLib(StrEnum):
     Musl = "musl"
     Glibc = "glibc"
 
 
-class AdoptxOs(StrEnum):
+class AdoptiumOs(StrEnum):
     Linux = "linux"
     Windows = "windows"
     Mac = "mac"
@@ -199,72 +196,43 @@ class AdoptxOs(StrEnum):
     AlpineLinux = "alpine-linux"
 
 
-ADOPTIUM_API_BASE = "https://api.adoptium.net"
-OPENJ9_API_BASE = " https://api.adoptopenjdk.net"
-ADOPTX_API_FEATURE_RELEASES = f"{{base_url}}/v3/assets/feature_releases/{{feature_version}}/{{release_type}}"
+ADOPTIUM_API_BASE = " https://api.adoptium.net"
+ADOPTIUM_API_FEATURE_RELEASES = f"{ADOPTIUM_API_BASE}/v3/assets/feature_releases/{{feature_version}}/{{release_type}}"
 # ?image_type={{image_type}}&heap_size={{heap_size}}&project={{project}}&vendor={{vendor}}&page_size={{page_size}}&page={{page}}&sort_method={{sort_method}}&sort_order={{sort_order}}
-ADOPTX_API_AVAILABLE_RELEASES = f"{{base_url}}/v3/info/available_releases"
+ADOPTIUM_API_AVAILABLE_RELEASES = f"{ADOPTIUM_API_BASE}/v3/info/available_releases"
 
 
-class AdoptxAPIFeatureReleasesQuery(APIQuery):
-    architecture: Optional[AdoptxArchitecture] = None
+class AdoptiumAPIFeatureReleasesQuery(APIQuery):
+    architecture: Optional[AdoptiumArchitecture] = None
     before: Optional[datetime] = None
-    c_lib: Optional[AdoptxCLib] = None
-    heap_size: Optional[AdoptxHeapSize] = AdoptxHeapSize.Normal
-    image_type: Optional[AdoptxImageType] = None
-    jvm_impl: Optional[AdoptxJvmImpl] = None
-    os: Optional[AdoptxOs] = None
-    vendor: Optional[AdoptxVendor] = None
+    c_lib: Optional[AdoptiumCLib] = None
+    heap_size: Optional[AdoptiumHeapSize] = AdoptiumHeapSize.Normal
+    image_type: Optional[AdoptiumImageType] = None
+    jvm_impl: Optional[AdoptiumJvmImpl] = None
+    os: Optional[AdoptiumOs] = None
     page_size: int = 10
     page: int = 0
-    project: Optional[AdoptxProject] = AdoptxProject.Jdk
-    sort_method: Optional[AdoptxSortMethod] = AdoptxSortMethod.Default
-    sort_order: Optional[AdoptxSortOrder] = AdoptxSortOrder.Desc
+    project: Optional[AdoptiumProject] = AdoptiumProject.Jdk
+    sort_method: Optional[AdoptiumSortMethod] = AdoptiumSortMethod.Default
+    sort_order: Optional[AdoptiumSortOrder] = AdoptiumSortOrder.Desc
+    vendor: Optional[AdoptiumVendor] = AdoptiumVendor.Eclipse
 
 
-def adoptxAPIFeatureReleasesUrl(
-    base_url: str,
-    feature_version: int,
-    release_type: AdoptxReleaseType = AdoptxReleaseType.GeneralAccess,
-    query: AdoptxAPIFeatureReleasesQuery = AdoptxAPIFeatureReleasesQuery(),
+def adoptiumAPIFeatureReleasesUrl(
+    feature: int,
+    release_type: AdoptiumReleaseType = AdoptiumReleaseType.GenralAccess,
+    query: AdoptiumAPIFeatureReleasesQuery = AdoptiumAPIFeatureReleasesQuery(),
 ):
     url = urlparse(
-        ADOPTX_API_FEATURE_RELEASES.format(
-            base_url=base_url,
-            feature_version=feature_version,
+        ADOPTIUM_API_FEATURE_RELEASES.format(
+            feature_version=feature,
             release_type=release_type.value,
         )
     )
     return urlunparse(url._replace(query=query.to_query()))
 
 
-def adoptiumAPIFeatureReleasesUrl(
-    feature_version: int,
-    release_type: AdoptxReleaseType = AdoptxReleaseType.GeneralAccess,
-    query: AdoptxAPIFeatureReleasesQuery = AdoptxAPIFeatureReleasesQuery(),
-):
-    return adoptxAPIFeatureReleasesUrl(
-        feature_version=feature_version,
-        release_type=release_type,
-        query=query,
-        base_url=ADOPTIUM_API_BASE,
-    )
-
-
-def openj9APIFeatureReleasesUrl(
-    feature_version: int,
-    release_type: AdoptxReleaseType = AdoptxReleaseType.GeneralAccess,
-    query: AdoptxAPIFeatureReleasesQuery = AdoptxAPIFeatureReleasesQuery(),
-):
-    return adoptxAPIFeatureReleasesUrl(
-        feature_version=feature_version,
-        release_type=release_type,
-        query=query,
-        base_url=OPENJ9_API_BASE,
-    )
-
-
-class AdoptxAvailableReleases(MetaBase):
+class AdoptiumAvailableReleases(MetaBase):
     available_releases: list[int]
     available_lts_releases: list[int]
     most_recent_lts: Optional[int]
@@ -273,13 +241,13 @@ class AdoptxAvailableReleases(MetaBase):
     tip_version: Optional[int]
 
 
-class AdoptxFile(MetaBase):
+class AdoptiumFile(MetaBase):
     name: str
     link: str
     size: Optional[int]
 
 
-class AdoptxPackage(AdoptxFile):
+class AdoptiumPackage(AdoptiumFile):
     checksum: Optional[str]
     checksum_link: Optional[str]
     signature_link: Optional[str]
@@ -287,22 +255,22 @@ class AdoptxPackage(AdoptxFile):
     # we intentionally omit download_count
 
 
-class AdoptxBinary(MetaBase):
+class AdoptiumBinary(MetaBase):
     os: str
-    architecture: AdoptxArchitecture
-    image_type: AdoptxImageType
-    c_lib: Optional[AdoptxCLib]
-    jvm_impl: AdoptxJvmImpl
-    package: Optional[AdoptxPackage]
-    installer: Optional[AdoptxPackage]
-    heap_size: AdoptxHeapSize
+    architecture: AdoptiumArchitecture
+    image_type: AdoptiumImageType
+    c_lib: Optional[AdoptiumCLib]
+    jvm_impl: AdoptiumJvmImpl
+    package: Optional[AdoptiumPackage]
+    installer: Optional[AdoptiumPackage]
+    heap_size: AdoptiumHeapSize
     updated_at: datetime
     scm_ref: Optional[str]
-    project: AdoptxProject
+    project: AdoptiumProject
     # we intentionally omit download_count
 
 
-class AdoptxVersion(MetaBase):
+class AdoptiumVersion(MetaBase):
     major: Optional[int]
     minor: Optional[int]
     security: Optional[int]
@@ -315,31 +283,31 @@ class AdoptxVersion(MetaBase):
     optional: Optional[str]
 
 
-class AdoptxRelease(MetaBase):
+class AdoptiumRelease(MetaBase):
     release_id: str = Field(alias="id")
     release_link: str
     release_name: str
     timestamp: datetime
     updated_at: datetime
-    binaries: list[AdoptxBinary]
+    binaries: list[AdoptiumBinary]
     release_type: str
-    vendor: AdoptxVendor
-    version_data: AdoptxVersion
-    source: Optional[AdoptxFile]
-    release_notes: Optional[AdoptxFile]
+    vendor: AdoptiumVendor
+    version_data: AdoptiumVersion
+    source: Optional[AdoptiumFile]
+    release_notes: Optional[AdoptiumFile]
     # we intentionally omit download_count
 
 
-class AdoptxReleases(MetaBase):
-    __root__: list[AdoptxRelease]
+class AdoptiumReleases(MetaBase):
+    __root__: list[AdoptiumRelease]
 
-    def __iter__(self) -> Generator[tuple[str, AdoptxRelease], None, None]:
+    def __iter__(self) -> Generator[tuple[str, AdoptiumRelease], None, None]:
         yield from ((str(i), val) for i, val in enumerate(self.__root__))
 
-    def __getitem__(self, item: int) -> AdoptxRelease:
+    def __getitem__(self, item: int) -> AdoptiumRelease:
         return self.__root__[item]
 
-    def append(self, rls: AdoptxRelease):
+    def append(self, rls: AdoptiumRelease):
         self.__root__.append(rls)
 
 
@@ -588,8 +556,7 @@ class ZuluPackagesDetail(MetaBase):
 MOJANG_OS_NAMES = ["mac-os", "linux", "windows"]
 
 MOJANG_OS_ARCHITECTURES = [
-    "x64",
-    "x86",
+    "x64" "x86",
     "arm64",
     "arm32",
 ]
